@@ -237,7 +237,7 @@ jq '.score' reports/copilot-review.json
 
 See these files for complete details:
 - **`AWESOME_COPILOT_GITHUB_CLI_GUIDE.md`** - Full integration guide
-- **`FINAL_AWESOME_COPILOT_SOLUTION.md`** - Complete explanation
+- **`docs/ARCHITECTURE.md`** - Architecture and implementation details
 - **`scripts/enhanced-copilot-review-v3.sh`** - Full implementation
 
 ## What awesome-copilot Adds
@@ -267,4 +267,4 @@ See these files for complete details:
 
 ---
 
-**Questions?** See AWESOME_COPILOT_GITHUB_CLI_GUIDE.md or FINAL_AWESOME_COPILOT_SOLUTION.md
+**Questions?** See docs/AWESOME_COPILOT_GITHUB_CLI_GUIDE.md or docs/ARCHITECTURE.md
