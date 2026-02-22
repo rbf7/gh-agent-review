@@ -1,3 +1,8 @@
+# ⚠️ Legacy Document (Archived)
+
+This architecture guide includes deprecated `main-review.sh` examples.
+For current architecture and commands, use `docs/ARCHITECTURE.md` and `scripts/enhanced-copilot-review-v3.sh`.
+
 # 🏛️ Git-Agnostic Architecture Guide
 
 Complete technical explanation of why this system works with any platform.

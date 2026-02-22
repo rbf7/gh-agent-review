@@ -1,3 +1,8 @@
+# ⚠️ Legacy Document (Archived)
+
+This quick reference documents deprecated `main-review.sh` usage.
+For active usage, follow `QUICK_START.md` and run `scripts/enhanced-copilot-review-v3.sh`.
+
 # 🚀 Quick Reference - Common Commands
 
 All commands work on **macOS**, **Linux**, and **Windows (PowerShell)**.

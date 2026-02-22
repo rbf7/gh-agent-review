@@ -1,3 +1,8 @@
+# ⚠️ Legacy Document (Archived)
+
+This guide contains deprecated `main-review.sh` instructions.
+Use `QUICK_START.md` and `scripts/enhanced-copilot-review-v3.sh` for current setup.
+
 # 📋 Environment Variables Guide
 
 ## Overview

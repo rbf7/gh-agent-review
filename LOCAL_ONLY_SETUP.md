@@ -1,3 +1,13 @@
+# ⚠️ Legacy Document (Archived)
+
+This file documents the deprecated `main-review.sh` flow and is retained for historical reference only.
+For the current implementation, use:
+
+- `QUICK_START.md`
+- `README.md`
+- `docs/INTEGRATION.md`
+- `scripts/enhanced-copilot-review-v3.sh`
+
 # 📱 Local-Only Setup Guide
 
 Perfect for **offline analysis**, **private repositories**, or **no platform needed**.

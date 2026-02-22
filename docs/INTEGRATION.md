@@ -36,10 +36,15 @@ jobs:
       - name: Run AI Code Review
         run: |
           chmod +x scripts/enhanced-copilot-review-v3.sh
+          chmod +x scripts/ci-smoke-validate-artifacts.sh
           ./scripts/enhanced-copilot-review-v3.sh \
             ${{ github.base_ref }} \
             ${{ github.head_ref }} \
             ./
+
+      - name: Validate Artifacts (CI Smoke)
+        run: |
+          ./scripts/ci-smoke-validate-artifacts.sh reports
       
       - name: Upload Report
         if: always()
@@ -77,7 +82,9 @@ ai_code_review:
   stage: review
   script:
     - chmod +x scripts/enhanced-copilot-review-v3.sh
+    - chmod +x scripts/ci-smoke-validate-artifacts.sh
     - ./scripts/enhanced-copilot-review-v3.sh $CI_MERGE_REQUEST_TARGET_BRANCH_NAME $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME ./
+    - ./scripts/ci-smoke-validate-artifacts.sh reports
   artifacts:
     paths:
       - reports/
@@ -109,7 +116,9 @@ pipeline {
                 script {
                     sh '''
                         chmod +x scripts/enhanced-copilot-review-v3.sh
+                chmod +x scripts/ci-smoke-validate-artifacts.sh
                         ./scripts/enhanced-copilot-review-v3.sh main "${GIT_BRANCH}" ./
+                ./scripts/ci-smoke-validate-artifacts.sh reports
                     '''
                 }
             }

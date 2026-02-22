@@ -1,3 +1,8 @@
+# ⚠️ Legacy Document (Archived)
+
+This checklist reflects a deprecated workflow and command set.
+Use `QUICK_START.md` and `scripts/enhanced-copilot-review-v3.sh` for active setup/testing.
+
 # 🎉 FINAL COMPLETION - All Files Ready!
 
 ## ✅ Complete File List (Now with .env.example!)

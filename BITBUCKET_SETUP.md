@@ -1,3 +1,8 @@
+# ⚠️ Legacy Document (Archived)
+
+This file references deprecated `main-review.sh` commands and legacy posting flows.
+Use the current v3 workflow in `README.md`, `QUICK_START.md`, and `scripts/enhanced-copilot-review-v3.sh`.
+
 # 🪣 Bitbucket Integration Guide
 
 Complete setup for **Bitbucket Cloud** or **Bitbucket Server/Data Center**.

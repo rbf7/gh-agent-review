@@ -167,16 +167,11 @@ You can still use them! The enhanced review system:
 ### Modified Workflow
 
 ```bash
-# Traditional review + awesome-copilot instructions
-./main-review.sh feature/test main .
-
 # Enhanced with downloaded instructions + agents
 ./scripts/enhanced-copilot-review-v3.sh feature/test main .
 
-# Full integration with your files
-USE_CUSTOM_ANALYSIS=true \
-USE_AI_REVIEW=true \
-./main-review.sh feature/test main .
+# Re-run with strict policy
+./scripts/enhanced-copilot-review-v3.sh feature/test main . --strict
 ```
 
 ---
@@ -419,9 +414,9 @@ rm -rf .copilot/
 ### 3. Combine with Traditional Analysis
 
 ```bash
-# Run both for comprehensive review:
-./main-review.sh feature/test main .           # Traditional
-./scripts/enhanced-copilot-review-v3.sh feature/test main .  # AI + awesome-copilot
+# Run v3 review + artifact smoke validation:
+./scripts/enhanced-copilot-review-v3.sh feature/test main .
+./scripts/ci-smoke-validate-artifacts.sh reports
 ```
 
 ### 4. Use in Pre-Commit

@@ -1,3 +1,8 @@
+# ⚠️ Legacy Document (Archived)
+
+This guide references older setup flows and file names.
+For active usage, follow `README.md`, `QUICK_START.md`, and `scripts/enhanced-copilot-review-v3.sh`.
+
 # 📍 How to Find and Use `.env.example`
 
 ## ✅ The `.env.example` File

@@ -14,6 +14,9 @@ chmod +x scripts/enhanced-copilot-review-v3.sh
 # 3. View results
 cat reports/enhanced-copilot-review.md
 cat reports/copilot-review.json
+
+# 4. Validate artifact schema (CI smoke)
+./scripts/ci-smoke-validate-artifacts.sh reports
 ```
 
 ## What Happens Automatically
@@ -122,6 +125,9 @@ reports/
 3. Post results to PR/MR (if configured)
 4. Works with GitHub, GitLab, Bitbucket, Gitea, Local repos
 ```
+
+Important: this tool is git-agnostic for diff input (it reads from native `git diff`).
+AI generation uses GitHub Copilot CLI, so you must run `gh auth login` first.
 
 ## One-Liner Examples
 

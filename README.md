@@ -39,6 +39,9 @@ chmod +x scripts/enhanced-copilot-review-v3.sh
 # 3. View results
 cat reports/enhanced-copilot-review.md
 cat reports/copilot-review.json
+
+# 4. (Optional) CI smoke validation
+./scripts/ci-smoke-validate-artifacts.sh reports
 ```
 
 **That's it!** The script handles everything else automatically.
@@ -243,6 +246,9 @@ Works with any git platform:
 ✓ Local git repositories
 ✓ Self-hosted installations
 ```
+
+Git-agnostic means branch diffs come from native `git` and can be reviewed from repositories hosted anywhere (GitHub, GitLab, Bitbucket, Gitea, self-hosted).
+The AI execution path is GitHub Copilot CLI (`gh copilot`), so a GitHub-authenticated CLI session is still required even when your remote host is not GitHub.
 
 ---
 

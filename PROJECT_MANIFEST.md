@@ -1,3 +1,8 @@
+# ⚠️ Legacy Document (Archived)
+
+This manifest describes a deprecated `main-review.sh` era project structure.
+Use `FILE_INVENTORY.md` and `PROJECT_SUMMARY.md` for current v3 inventory.
+
 # 📦 Complete Project Manifest
 
 ## Project Structure - Ready to Commit

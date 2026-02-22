@@ -1,3 +1,8 @@
+# ⚠️ Legacy Document (Archived)
+
+This summary references deprecated `main-review.sh` commands.
+Use `README.md`, `QUICK_START.md`, and `docs/INTEGRATION.md` for current usage.
+
 # 🎉 COMPLETION SUMMARY - Ready to Commit!
 
 ## ✅ What Was Created

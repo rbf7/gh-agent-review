@@ -310,6 +310,32 @@ chmod 755 reports/
 
 ---
 
+### "CI smoke validation failed"
+
+**Problem:** `scripts/ci-smoke-validate-artifacts.sh` exits non-zero in CI
+
+**Solutions:**
+
+```bash
+# Run validator manually
+./scripts/ci-smoke-validate-artifacts.sh reports
+
+# Common causes:
+# 1) Missing files
+ls -la reports/copilot-review.json reports/enhanced-copilot-review.md
+
+# 2) Invalid JSON
+jq empty reports/copilot-review.json
+
+# 3) Recommendation enum invalid
+jq '.recommendation' reports/copilot-review.json
+
+# 4) stats mismatch with issues
+jq '{issues:(.issues|length),stats:.stats}' reports/copilot-review.json
+```
+
+---
+
 ### "JSON report malformed"
 
 **Problem:** reports/copilot-review.json is not valid JSON

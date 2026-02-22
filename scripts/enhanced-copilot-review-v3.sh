@@ -610,6 +610,15 @@ EOF
     log_info "Markdown report: $REPORTS_DIR/enhanced-copilot-review.md"
     log_info "JSON report: $REPORTS_DIR/copilot-review.json"
 
+    local smoke_script="$SCRIPT_DIR/ci-smoke-validate-artifacts.sh"
+    if [ -x "$smoke_script" ]; then
+        log_header "RUNNING CI SMOKE VALIDATION"
+        "$smoke_script" "$REPORTS_DIR"
+    else
+        log_warning "CI smoke script not executable or missing: $smoke_script"
+        log_warning "Run manually: bash $smoke_script $REPORTS_DIR"
+    fi
+
     apply_strict_exit_policy
 }
 

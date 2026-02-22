@@ -1,3 +1,8 @@
+# ⚠️ Legacy Document (Archived)
+
+This summary is historical output from an earlier workflow and contains deprecated command references.
+Use `README.md` and `QUICK_START.md` for current instructions.
+
 # 📋 FINAL COMPLETE SUMMARY - Everything Ready!
 
 ## ✅ Problem Solved: `.env.example` File NOW Available!
