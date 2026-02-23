@@ -2,7 +2,7 @@
 
 > **Production-Grade Code Review System** using GitHub Copilot + awesome-copilot Instructions + 6 Specialized AI Agents
 
-> **v3 Update (2026-02-22):** Preferred script is `scripts/enhanced-copilot-review-v3.sh`. Legacy scripts `scripts/enhanced-copilot-review.sh` and `scripts/enhanced-copilot-review-v2.sh` are kept for backward compatibility.
+> **v3 Update (2026-02-22):** Preferred script is `scripts/enhanced-copilot-review-v3.sh`.
 
 ![Status](https://img.shields.io/badge/status-production%20ready-brightgreen)
 ![Version](https://img.shields.io/badge/version-1.0.1-blue)
