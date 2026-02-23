@@ -38,6 +38,11 @@ ANTIGRAVITY_DIR="${COPILOT_DIR}/antigravity-awesome-skills"
 DETECTED_STACKS=""
 STRICT_MODE=false
 
+DEFAULT_ANTIGRAVITY_IGNORE_PATHS=(
+    "skills/windows-privilege-escalation/SKILL.md"
+)
+ANTIGRAVITY_IGNORE_PATHS=()
+
 # ============================================================================
 # LOGGING
 # ============================================================================
@@ -165,6 +170,29 @@ detect_stacks() {
 # INSTRUCTIONS
 # ============================================================================
 
+build_antigravity_ignore_list() {
+    ANTIGRAVITY_IGNORE_PATHS=("${DEFAULT_ANTIGRAVITY_IGNORE_PATHS[@]}")
+
+    if [ -n "${ANTIGRAVITY_IGNORE_PATHS_EXTRA:-}" ]; then
+        IFS=':' read -r -a extra_paths <<< "$ANTIGRAVITY_IGNORE_PATHS_EXTRA"
+        for extra_path in "${extra_paths[@]}"; do
+            [ -n "$extra_path" ] && ANTIGRAVITY_IGNORE_PATHS+=("$extra_path")
+        done
+    fi
+}
+
+is_ignored_antigravity_path() {
+    local candidate="$1"
+
+    for ignored in "${ANTIGRAVITY_IGNORE_PATHS[@]}"; do
+        if [ "$candidate" = "$ignored" ]; then
+            return 0
+        fi
+    done
+
+    return 1
+}
+
 download_awesome_copilot() {
     log_header "DOWNLOADING AWESOME COPILOT"
 
@@ -187,31 +215,63 @@ download_awesome_copilot() {
 download_antigravity_skills() {
     log_header "DOWNLOADING ANTIGRAVITY SKILLS"
 
-    if [ -d "$ANTIGRAVITY_DIR/.git" ]; then
-        log_info "Updating antigravity-awesome-skills repository..."
-        git -C "$ANTIGRAVITY_DIR" pull origin main --quiet 2>/dev/null || true
-    else
-        log_action "Cloning antigravity-awesome-skills repository..."
-        git clone --depth 1 --branch main https://github.com/sickn33/antigravity-awesome-skills.git "$ANTIGRAVITY_DIR" 2>/dev/null || {
-            log_warning "Could not clone antigravity-awesome-skills, continuing with cached version if available"
-        }
+    build_antigravity_ignore_list
+
+    if [ ${#ANTIGRAVITY_IGNORE_PATHS[@]} -gt 0 ]; then
+        log_info "Ignoring antigravity paths: ${ANTIGRAVITY_IGNORE_PATHS[*]}"
     fi
 
     if [ -d "$ANTIGRAVITY_DIR" ]; then
-        local copied=0
-
-        while IFS= read -r file; do
-            if [[ "$file" == *"skill"* ]] || [[ "$file" == *"instruction"* ]]; then
-                cp "$file" "$INSTRUCTIONS_DIR/" 2>/dev/null || true
-                copied=$((copied + 1))
-                if [ "$copied" -ge 20 ]; then
-                    break
-                fi
-            fi
-        done < <(find "$ANTIGRAVITY_DIR" -name "*.md" -type f 2>/dev/null)
-
-        log_success "Antigravity skills synced"
+        rm -rf "$ANTIGRAVITY_DIR"
     fi
+
+    mkdir -p "$ANTIGRAVITY_DIR"
+
+    log_action "Cloning antigravity-awesome-skills repository metadata (partial clone)..."
+    if ! git clone --depth 1 --filter=blob:none --no-checkout --branch main https://github.com/sickn33/antigravity-awesome-skills.git "$ANTIGRAVITY_DIR" 2>/dev/null; then
+        log_warning "Could not clone antigravity-awesome-skills"
+        return 0
+    fi
+
+    local selected_files=()
+    local relative_path=""
+
+    while IFS= read -r relative_path; do
+        [ -n "$relative_path" ] || continue
+
+        if is_ignored_antigravity_path "$relative_path"; then
+            log_warning "Skipping ignored antigravity path: $relative_path"
+            continue
+        fi
+
+        if echo "$relative_path" | grep -Eiq 'skill|instruction'; then
+            selected_files+=("$relative_path")
+            if [ ${#selected_files[@]} -ge 20 ]; then
+                break
+            fi
+        fi
+    done < <(git -C "$ANTIGRAVITY_DIR" ls-tree -r --name-only origin/main -- "*.md" 2>/dev/null)
+
+    if [ ${#selected_files[@]} -eq 0 ]; then
+        log_warning "No antigravity markdown files selected after ignore filtering"
+        return 0
+    fi
+
+    git -C "$ANTIGRAVITY_DIR" sparse-checkout init --no-cone >/dev/null 2>&1 || true
+    printf '%s\n' "${selected_files[@]}" | git -C "$ANTIGRAVITY_DIR" sparse-checkout set --stdin >/dev/null 2>&1 || true
+    git -C "$ANTIGRAVITY_DIR" checkout -f origin/main --quiet 2>/dev/null || true
+
+    local copied=0
+    local full_path=""
+    for relative_path in "${selected_files[@]}"; do
+        full_path="$ANTIGRAVITY_DIR/$relative_path"
+        if [ -f "$full_path" ]; then
+            cp "$full_path" "$INSTRUCTIONS_DIR/" 2>/dev/null || true
+            copied=$((copied + 1))
+        fi
+    done
+
+    log_success "Antigravity skills synced ($copied files copied)"
 }
 
 create_copilot_instructions() {
