@@ -1,6 +1,7 @@
 # 📋 FILE INVENTORY & STATUS
 
 > **v3 Status (2026-02-22):** Preferred runner is `scripts/enhanced-copilot-review-v3.sh`. Legacy scripts remain for compatibility.
+> **v3.1 Update (2026-02-23):** Runner now supports `--repo-root <path>` and `--model <id>` (default `gpt-5-mini`), and `<code-path>` may be `.` when no `src` folder exists.
 
 **Last Updated:** February 22, 2026  
 **Status:** ✅ Current and v3-compliant

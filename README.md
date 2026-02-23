@@ -3,6 +3,7 @@
 > **Production-Grade Code Review System** using GitHub Copilot + awesome-copilot Instructions + 6 Specialized AI Agents
 
 > **v3 Update (2026-02-22):** Preferred script is `scripts/enhanced-copilot-review-v3.sh`.
+> **v3.1 Update (2026-02-23):** Script supports `--repo-root <path>` and `--model <id>` (default: `gpt-5-mini`). Use `.` as `<code-path>` when a repo has no `src` directory.
 
 ![Status](https://img.shields.io/badge/status-production%20ready-brightgreen)
 ![Version](https://img.shields.io/badge/version-1.0.1-blue)
@@ -36,6 +37,12 @@ chmod +x scripts/enhanced-copilot-review-v3.sh
 # 2. Run review
 ./scripts/enhanced-copilot-review-v3.sh main feature/auth ./src
 
+# If the repository has no src directory, scan the full repo
+./scripts/enhanced-copilot-review-v3.sh main feature/auth .
+
+# External repository + explicit model
+./scripts/enhanced-copilot-review-v3.sh origin/develop fix/inv-8584 src --repo-root /path/to/repo --model gpt-5-mini
+
 # 3. View results
 cat reports/enhanced-copilot-review.md
 cat reports/copilot-review.json
@@ -47,6 +54,28 @@ cat reports/copilot-review.json
 **That's it!** The script handles everything else automatically.
 
 👉 **[Full Quick Start Guide](QUICK_START.md)**
+
+### List Available `gh copilot` Models
+
+```powershell
+# Windows (PowerShell)
+gh copilot -- --help | Select-String -Pattern '--model <model>' -Context 0,20
+```
+
+```bash
+# macOS / Linux (bash, zsh)
+gh copilot -- --help | sed -n '/--model <model>/,/--no-alt-screen/p'
+```
+
+### Antigravity Ignore List
+
+- Default blocked path: `skills/windows-privilege-escalation/SKILL.md`
+- Add extra blocked paths per run with `ANTIGRAVITY_IGNORE_PATHS_EXTRA` (colon-separated)
+
+```bash
+ANTIGRAVITY_IGNORE_PATHS_EXTRA="skills/path1/SKILL.md:skills/path2/SKILL.md" \
+./scripts/enhanced-copilot-review-v3.sh main feature/auth .
+```
 
 ---
 

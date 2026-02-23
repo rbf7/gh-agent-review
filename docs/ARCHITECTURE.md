@@ -1,6 +1,7 @@
 # 🏗️ System Architecture (Updated v1.0.1)
 
 > **v3 Update (2026-02-22):** Runtime implementation now prefers `scripts/enhanced-copilot-review-v3.sh` for actual GitHub CLI Copilot execution and normalized JSON reporting.
+> **v3.1 Update (2026-02-23):** Runtime supports external repositories via `--repo-root`, configurable model via `--model`, and full-prompt stdin execution for cross-platform reliability.
 
 Complete technical overview of the Agentic AI Code Reviewer system with Terraform support.
 

@@ -28,15 +28,16 @@ NC='\033[0m'
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
-COPILOT_DIR="${PROJECT_ROOT}/.copilot"
-INSTRUCTIONS_DIR="${COPILOT_DIR}/instructions"
-AGENTS_DIR="${PROJECT_ROOT}/.github/agents"
-REPORTS_DIR="${PROJECT_ROOT}/reports"
-AWESOME_COPILOT_DIR="${COPILOT_DIR}/awesome-copilot"
-ANTIGRAVITY_DIR="${COPILOT_DIR}/antigravity-awesome-skills"
+COPILOT_DIR=""
+INSTRUCTIONS_DIR=""
+AGENTS_DIR=""
+REPORTS_DIR=""
+AWESOME_COPILOT_DIR=""
+ANTIGRAVITY_DIR=""
 
 DETECTED_STACKS=""
 STRICT_MODE=false
+COPILOT_MODEL="gpt-5-mini"
 
 DEFAULT_ANTIGRAVITY_IGNORE_PATHS=(
     "skills/windows-privilege-escalation/SKILL.md"
@@ -58,6 +59,31 @@ log_success() { echo -e "${GREEN}✅ ${1}${NC}"; }
 log_warning() { echo -e "${YELLOW}⚠️  ${1}${NC}"; }
 log_error() { echo -e "${RED}❌ ${1}${NC}"; }
 log_action() { echo -e "${MAGENTA}▶  ${1}${NC}"; }
+
+TEMP_FILES=()
+
+register_temp_file() {
+    local temp_file="$1"
+    [ -n "$temp_file" ] && TEMP_FILES+=("$temp_file")
+}
+
+cleanup_temp_files() {
+    local temp_file=""
+    for temp_file in "${TEMP_FILES[@]:-}"; do
+        [ -n "$temp_file" ] && [ -f "$temp_file" ] && rm -f "$temp_file"
+    done
+}
+
+trap cleanup_temp_files EXIT INT TERM
+
+configure_paths() {
+    COPILOT_DIR="${PROJECT_ROOT}/.copilot"
+    INSTRUCTIONS_DIR="${COPILOT_DIR}/instructions"
+    AGENTS_DIR="${PROJECT_ROOT}/.github/agents"
+    REPORTS_DIR="${PROJECT_ROOT}/reports"
+    AWESOME_COPILOT_DIR="${COPILOT_DIR}/awesome-copilot"
+    ANTIGRAVITY_DIR="${COPILOT_DIR}/antigravity-awesome-skills"
+}
 
 # ============================================================================
 # VALIDATION
@@ -363,6 +389,7 @@ run_ai_review() {
     local diff_file="$REPORTS_DIR/diff.patch"
     local instructions_block="$REPORTS_DIR/instructions-block.md"
     local prompt_file="$REPORTS_DIR/review-prompt.txt"
+    local prompt_temp_file=""
     local raw_output="$REPORTS_DIR/copilot-review.txt"
 
     git -C "$PROJECT_ROOT" diff "$branch1...$branch2" -- "$code_path" > "$diff_file"
@@ -409,7 +436,16 @@ $(cat "$instructions_block")
 $(cat "$diff_file")
 EOF
 
-    if gh copilot -p "$(cat "$prompt_file")" > "$raw_output" 2>&1; then
+    prompt_temp_file="$(mktemp "${REPORTS_DIR}/review-prompt.tmp.XXXXXX.txt")"
+    register_temp_file "$prompt_temp_file"
+    cp "$prompt_file" "$prompt_temp_file"
+
+    local copilot_cmd=(gh copilot --silent)
+    if [ -n "$COPILOT_MODEL" ]; then
+        copilot_cmd+=(--model "$COPILOT_MODEL")
+    fi
+
+    if "${copilot_cmd[@]}" < "$prompt_temp_file" > "$raw_output" 2>&1; then
         log_success "AI review completed"
     else
         log_error "gh copilot prompt execution failed"
@@ -601,7 +637,7 @@ main() {
     echo ""
 
     if [ $# -lt 3 ]; then
-        log_error "Usage: $0 <base-branch> <head-branch> <code-path> [--strict]"
+        log_error "Usage: $0 <base-branch> <head-branch> <code-path> [--strict] [--repo-root <path>] [--model <model-id>]"
         exit 1
     fi
 
@@ -615,12 +651,34 @@ main() {
             --strict)
                 STRICT_MODE=true
                 ;;
+            --repo-root)
+                if [ -z "${2:-}" ]; then
+                    log_error "Missing value for --repo-root"
+                    return 1
+                fi
+                PROJECT_ROOT="$2"
+                shift
+                ;;
+            --model)
+                if [ -z "${2:-}" ]; then
+                    log_error "Missing value for --model"
+                    return 1
+                fi
+                COPILOT_MODEL="$2"
+                shift
+                ;;
             *)
                 log_warning "Unknown option ignored: $1"
                 ;;
         esac
         shift || true
     done
+
+    configure_paths
+    log_info "Using project root: $PROJECT_ROOT"
+    if [ -n "$COPILOT_MODEL" ]; then
+        log_info "Using Copilot model: $COPILOT_MODEL"
+    fi
 
     validate_prerequisites
     setup_directories

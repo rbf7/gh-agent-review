@@ -66,7 +66,7 @@ jq -e '
 ' "$JSON_FILE" >/dev/null || fail "JSON stats do not match issues"
 
 # Basic markdown structure checks
-if ! grep -q "^# 🔍 Enhanced Copilot Code Review Report" "$MD_FILE"; then
+if ! grep -Eiq "^# .*Enhanced Copilot Code Review Report" "$MD_FILE"; then
   fail "Markdown header missing or invalid"
 fi
 if ! grep -q "## Executive Summary" "$MD_FILE"; then

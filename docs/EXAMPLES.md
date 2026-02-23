@@ -1,6 +1,7 @@
 # 📚 Real-World Examples
 
 > **v3 Update (2026-02-22):** Replace command examples with `scripts/enhanced-copilot-review-v3.sh` when running in this repository.
+> **v3.1 Update (2026-02-23):** Examples may include `--repo-root` for external repos, `--model` for model selection, and `.` as `<code-path>` for full-repo review.
 
 Complete, ready-to-run examples of the Agentic AI Code Reviewer in action.
 

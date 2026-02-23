@@ -1,6 +1,7 @@
 # 📊 UPDATED PROJECT SUMMARY - WITH TERRAFORM SUPPORT
 
 > **v3 Update (2026-02-22):** Primary script is now `scripts/enhanced-copilot-review-v3.sh` (existing scripts are retained unchanged).
+> **v3.1 Update (2026-02-23):** Script now supports `--repo-root <path>` and `--model <id>` (default `gpt-5-mini`), and accepts `.` as `<code-path>`.
 
 ## ✅ Complete Agentic AI Code Reviewer System v1.0.1
 

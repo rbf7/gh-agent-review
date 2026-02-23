@@ -1,6 +1,7 @@
 # 📦 DELIVERY SUMMARY - Agentic AI Code Reviewer v1.0.1
 
 > **v3 Update (2026-02-22):** Recommended script for new usage is `scripts/enhanced-copilot-review-v3.sh`; existing scripts are intentionally unchanged.
+> **v3.1 Update (2026-02-23):** New runtime options: `--repo-root <path>` and `--model <id>` (default `gpt-5-mini`); use `.` for `<code-path>` when no `src` directory exists.
 
 **Date:** February 22, 2026  
 **Version:** 1.0.1 - Complete Terraform Support  

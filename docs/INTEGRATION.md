@@ -1,6 +1,7 @@
 # 🔧 Integration Guide
 
 > **v3 Update (2026-02-22):** CI/CD examples should invoke `scripts/enhanced-copilot-review-v3.sh` for current behavior.
+> **v3.1 Update (2026-02-23):** Include `<code-path>` explicitly in CI calls (use `.` when needed); optional flags `--repo-root` and `--model` are now available.
 
 How to integrate the Agentic AI Code Reviewer into your CI/CD pipelines and development workflows.
 

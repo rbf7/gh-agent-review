@@ -1,6 +1,7 @@
 # 🎯 QUICK START: Enhanced Copilot Review with awesome-copilot
 
 > **v3 Update (2026-02-22):** Use `scripts/enhanced-copilot-review-v3.sh` for real AI diff review + structured JSON output. Existing scripts remain available.
+> **v3.1 Update (2026-02-23):** Optional flags: `--repo-root <path>` and `--model <id>` (default: `gpt-5-mini`). If your project has no `src` folder, use `.` as `<code-path>`.
 
 ## 30-Second Setup
 
@@ -9,7 +10,7 @@
 chmod +x scripts/enhanced-copilot-review-v3.sh
 
 # 2. Run it
-./scripts/enhanced-copilot-review-v3.sh feature/my-feature main ./src
+./scripts/enhanced-copilot-review-v3.sh main feature/my-feature ./src
 
 # 3. View results
 cat reports/enhanced-copilot-review.md
@@ -129,11 +130,43 @@ reports/
 Important: this tool is git-agnostic for diff input (it reads from native `git diff`).
 AI generation uses GitHub Copilot CLI, so you must run `gh auth login` first.
 
+## How to List Available Models
+
+```powershell
+# Windows (PowerShell)
+gh copilot -- --help | Select-String -Pattern '--model <model>' -Context 0,20
+```
+
+```bash
+# macOS / Linux (bash, zsh)
+gh copilot -- --help | sed -n '/--model <model>/,/--no-alt-screen/p'
+```
+
+## Antigravity Ignore List
+
+- Default blocked path: `skills/windows-privilege-escalation/SKILL.md`
+- Add extra blocked paths per run with `ANTIGRAVITY_IGNORE_PATHS_EXTRA` (colon-separated)
+
+```bash
+ANTIGRAVITY_IGNORE_PATHS_EXTRA="skills/path1/SKILL.md:skills/path2/SKILL.md" \
+./scripts/enhanced-copilot-review-v3.sh main feature/auth .
+```
+
 ## One-Liner Examples
 
 ### Review feature branch
 ```bash
 ./scripts/enhanced-copilot-review-v3.sh main feature/auth ./src
+```
+
+### Review full repository (no src directory)
+```bash
+./scripts/enhanced-copilot-review-v3.sh main feature/auth .
+```
+
+### Review external repository + choose model
+```bash
+./scripts/enhanced-copilot-review-v3.sh origin/develop fix/inv-8584 src --repo-root /path/to/repo --model gpt-5-mini
 ```
 
 ### Review current changes
@@ -168,7 +201,7 @@ source ./your_file_2.sh
 ```yaml
 # .github/workflows/review.yml
 - run: chmod +x scripts/enhanced-copilot-review-v3.sh
-- run: ./scripts/enhanced-copilot-review-v3.sh ${{ github.base_ref }} ${{ github.head_ref }}
+- run: ./scripts/enhanced-copilot-review-v3.sh ${{ github.base_ref }} ${{ github.head_ref }} .
 - uses: actions/upload-artifact@v3
   with:
     name: review-reports
@@ -204,7 +237,7 @@ When you open your repo in VS Code:
 
 ```bash
 # Run review
-./scripts/enhanced-copilot-review-v3.sh feature/test main ./src
+./scripts/enhanced-copilot-review-v3.sh main feature/test ./src
 
 # Check detection
 cat reports/enhanced-copilot-review.md | head -20
@@ -263,7 +296,7 @@ See these files for complete details:
 ✅ Git-agnostic (any platform)
 ✅ Works with your existing files
 
-**Next: `chmod +x scripts/enhanced-copilot-review-v3.sh && ./scripts/enhanced-copilot-review-v3.sh feature/test main ./src`**
+**Next: `chmod +x scripts/enhanced-copilot-review-v3.sh && ./scripts/enhanced-copilot-review-v3.sh main feature/test ./src`**
 
 ---
 
