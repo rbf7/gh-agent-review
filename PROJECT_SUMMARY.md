@@ -9,6 +9,33 @@ Your finished product: **`scripts/enhanced-copilot-review-v3.sh`** - A productio
 
 ---
 
+## 📌 Mirrored Usage Addendum (v3.1)
+
+Script signature:
+
+`./scripts/enhanced-copilot-review-v3.sh <base-branch> <head-branch> <code-path> [--repo-root <path>] [--model <id>]`
+
+- `<base-branch>`: baseline ref for comparison
+- `<head-branch>`: branch/ref under review
+- `<code-path>`: scoped folder or `.` for full-repo review
+- `--repo-root`: optional target repository when script runs from another project
+
+Generic external-project example:
+
+```bash
+./scripts/enhanced-copilot-review-v3.sh origin/develop feature/auth src --repo-root /path/to/external-repo --model gpt-5-mini
+```
+
+Antigravity ignore-list mirror:
+
+```bash
+# Default blocked: skills/windows-privilege-escalation/SKILL.md
+ANTIGRAVITY_IGNORE_PATHS_EXTRA="skills/path1/SKILL.md:skills/path2/SKILL.md" \
+./scripts/enhanced-copilot-review-v3.sh main feature/auth .
+```
+
+---
+
 ## 📋 Files Created During Development
 
 ### Total Files Generated: 16+ (Updated)

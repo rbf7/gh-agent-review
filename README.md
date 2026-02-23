@@ -41,7 +41,7 @@ chmod +x scripts/enhanced-copilot-review-v3.sh
 ./scripts/enhanced-copilot-review-v3.sh main feature/auth .
 
 # External repository + explicit model
-./scripts/enhanced-copilot-review-v3.sh origin/develop fix/inv-8584 src --repo-root /path/to/repo --model gpt-5-mini
+./scripts/enhanced-copilot-review-v3.sh origin/develop feature/auth src --repo-root /path/to/external-repo --model gpt-5-mini
 
 # 3. View results
 cat reports/enhanced-copilot-review.md
@@ -49,6 +49,18 @@ cat reports/copilot-review.json
 
 # 4. (Optional) CI smoke validation
 ./scripts/ci-smoke-validate-artifacts.sh reports
+```
+
+### Why 3 parameters + `--repo-root`
+
+- `<base-branch>`: baseline for comparison (for example `origin/develop`)
+- `<head-branch>`: branch to review (for example `feature/auth`)
+- `<code-path>`: folder/file scope (use `src`, `backend`, or `.` for full repo)
+- `--repo-root <path>`: optional target repository root when script runs from a different tools repo
+
+```bash
+# Run script from tools repo, review an external repository
+./scripts/enhanced-copilot-review-v3.sh origin/develop feature/auth src --repo-root /path/to/external-repo
 ```
 
 **That's it!** The script handles everything else automatically.

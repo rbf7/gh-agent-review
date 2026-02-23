@@ -20,6 +20,25 @@ cat reports/copilot-review.json
 ./scripts/ci-smoke-validate-artifacts.sh reports
 ```
 
+## Why 3 Parameters + `--repo-root`
+
+Script signature:
+
+```bash
+./scripts/enhanced-copilot-review-v3.sh <base-branch> <head-branch> <code-path> [--repo-root <path>] [--model <id>] [--strict]
+```
+
+- `<base-branch>`: comparison baseline (example: `origin/develop`)
+- `<head-branch>`: branch being reviewed (example: `feature/auth`)
+- `<code-path>`: review scope (`src`, `backend`, `terraform`, or `.`)
+- `--repo-root <path>`: target repo location if script lives in another project
+
+### External Project Directory (Fake Example)
+
+```bash
+./scripts/enhanced-copilot-review-v3.sh origin/develop feature/auth src --repo-root /path/to/external-repo --model gpt-5-mini
+```
+
 ## What Happens Automatically
 
 | Step | What | Output |
@@ -166,7 +185,7 @@ ANTIGRAVITY_IGNORE_PATHS_EXTRA="skills/path1/SKILL.md:skills/path2/SKILL.md" \
 
 ### Review external repository + choose model
 ```bash
-./scripts/enhanced-copilot-review-v3.sh origin/develop fix/inv-8584 src --repo-root /path/to/repo --model gpt-5-mini
+./scripts/enhanced-copilot-review-v3.sh origin/develop feature/auth src --repo-root /path/to/external-repo --model gpt-5-mini
 ```
 
 ### Review current changes

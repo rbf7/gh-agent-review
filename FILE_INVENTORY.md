@@ -9,6 +9,34 @@
 
 ---
 
+## 📌 Mirrored Usage Addendum (v3.1)
+
+Script signature:
+
+`./scripts/enhanced-copilot-review-v3.sh <base-branch> <head-branch> <code-path> [--repo-root <path>] [--model <id>]`
+
+- `<base-branch>`: baseline ref
+- `<head-branch>`: target ref under review
+- `<code-path>`: review scope (`src`, `backend`, `terraform`, or `.`)
+- `--repo-root`: optional external repository root
+
+Generic external-project example:
+
+```bash
+./scripts/enhanced-copilot-review-v3.sh origin/develop feature/auth src --repo-root /path/to/external-repo --model gpt-5-mini
+```
+
+Antigravity ignore-list mirror:
+
+```bash
+# Default blocked path:
+# skills/windows-privilege-escalation/SKILL.md
+ANTIGRAVITY_IGNORE_PATHS_EXTRA="skills/path1/SKILL.md:skills/path2/SKILL.md" \
+./scripts/enhanced-copilot-review-v3.sh main feature/auth .
+```
+
+---
+
 ## 📋 Complete File Structure
 
 ```

@@ -9,6 +9,31 @@
 
 ---
 
+## 📌 Mirrored Usage Addendum (v3.1)
+
+Command format:
+
+`./scripts/enhanced-copilot-review-v3.sh <base-branch> <head-branch> <code-path> [--repo-root <path>] [--model <id>] [--strict]`
+
+- `<base-branch>` and `<head-branch>` define the diff range
+- `<code-path>` narrows scope (`src`, `backend`, `terraform`, or `.`)
+- `--repo-root` allows running from one repository while reviewing another
+
+Generic external-project example:
+
+```bash
+./scripts/enhanced-copilot-review-v3.sh origin/develop feature/auth src --repo-root /path/to/external-repo --model gpt-5-mini
+```
+
+Antigravity ignore-list mirror:
+
+```bash
+ANTIGRAVITY_IGNORE_PATHS_EXTRA="skills/path1/SKILL.md:skills/path2/SKILL.md" \
+./scripts/enhanced-copilot-review-v3.sh main feature/auth .
+```
+
+---
+
 ## 🎯 DELIVERY HIGHLIGHTS
 
 ### ✅ What's Included

@@ -7,6 +7,24 @@ Complete, ready-to-run examples of the Agentic AI Code Reviewer in action.
 
 ---
 
+## Example 0: External Project Directory
+
+### Scenario
+The review script is stored in a tools repository, but you want to review another repository on disk.
+
+### Command
+```bash
+./scripts/enhanced-copilot-review-v3.sh origin/develop feature/auth src --repo-root /path/to/external-repo --model gpt-5-mini
+```
+
+### Parameter Notes
+- `origin/develop` = baseline ref
+- `feature/auth` = branch being reviewed
+- `src` = review scope (use `.` for full repo)
+- `--repo-root` = actual repository root to diff and scan
+
+---
+
 ## Example 1: Java Spring Boot Application
 
 ### Scenario

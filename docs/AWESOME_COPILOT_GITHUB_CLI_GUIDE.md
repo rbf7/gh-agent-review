@@ -71,6 +71,23 @@ chmod +x scripts/enhanced-copilot-review-v3.sh
 ./scripts/enhanced-copilot-review-v3.sh main feature/my-feature ./src
 ```
 
+### Parameter Meaning (Base, Head, Path, Repo Root)
+
+```bash
+./scripts/enhanced-copilot-review-v3.sh <base-branch> <head-branch> <code-path> [--repo-root <path>]
+```
+
+- `<base-branch>`: baseline ref (for example `origin/develop`)
+- `<head-branch>`: branch to review (for example `feature/my-feature`)
+- `<code-path>`: scope to review (`src`, `backend`, `terraform`, or `.`)
+- `--repo-root <path>`: optional target repository when script runs from another directory
+
+### External Repository Example (Generic)
+
+```bash
+./scripts/enhanced-copilot-review-v3.sh origin/develop feature/my-feature src --repo-root /path/to/external-repo --model gpt-5-mini
+```
+
 ### 3. Check Results
 
 ```bash
@@ -544,4 +561,4 @@ git push origin feature/my-feature
 
 **Ready to supercharge your code reviews! 🚀**
 
-*Last Updated: 2024*
+*Last Updated: 2026-02-23*

@@ -97,6 +97,27 @@ gh auth login
 
 ## Runtime Issues
 
+### "I passed wrong parameters / what are the 3 positional args?"
+
+**Problem:** Command arguments are out of order, or `src` is used in repositories that do not have a `src` folder.
+
+**Solution:**
+
+```bash
+# Correct order:
+./scripts/enhanced-copilot-review-v3.sh <base-branch> <head-branch> <code-path> [--repo-root <path>]
+
+# Example with full-repo scope
+./scripts/enhanced-copilot-review-v3.sh origin/develop feature/auth .
+
+# Example for external repository target
+./scripts/enhanced-copilot-review-v3.sh origin/develop feature/auth src --repo-root /path/to/external-repo
+```
+
+Note: some teams say "project root" informally; the script flag name is `--repo-root`.
+
+---
+
 ### "No changes to review"
 
 **Problem:** No diff found between branches
@@ -663,4 +684,4 @@ code_review:
 
 ---
 
-**Last Updated:** February 2024
+**Last Updated:** February 23, 2026

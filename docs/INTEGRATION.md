@@ -7,6 +7,25 @@ How to integrate the Agentic AI Code Reviewer into your CI/CD pipelines and deve
 
 ---
 
+## Usage Parameters
+
+```bash
+./scripts/enhanced-copilot-review-v3.sh <base-branch> <head-branch> <code-path> [--repo-root <path>] [--model <id>]
+```
+
+- `<base-branch>`: baseline branch/ref
+- `<head-branch>`: branch/ref under review
+- `<code-path>`: scope inside target repo (`src`, `backend`, `terraform`, `.`)
+- `--repo-root`: optional external target repository root
+
+### External Target Repository (Generic)
+
+```bash
+./scripts/enhanced-copilot-review-v3.sh origin/develop feature/auth . --repo-root /path/to/external-repo --model gpt-5-mini
+```
+
+---
+
 ## GitHub Actions Integration
 
 ### Basic Setup
