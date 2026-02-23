@@ -1,6 +1,7 @@
 # 🎯 GitHub Copilot + awesome-copilot + GitHub CLI Integration
 
 > **v3 Update (2026-02-22):** Use `scripts/enhanced-copilot-review-v3.sh` as the default command in this repository.
+> **v3.1 Update (2026-02-23):** Script adds `--repo-root <path>` and `--model <id>` (default `gpt-5-mini`); use `.` for `<code-path>` when no `src` exists.
 
 Complete guide to pulling agents, instructions, and cookbooks from awesome-copilot and injecting them into your GitHub CLI code reviews.
 
@@ -67,7 +68,24 @@ chmod +x scripts/enhanced-copilot-review-v3.sh
 ### 2. Run Against Your Code
 
 ```bash
-./scripts/enhanced-copilot-review-v3.sh feature/my-feature main ./src
+./scripts/enhanced-copilot-review-v3.sh main feature/my-feature ./src
+```
+
+### Parameter Meaning (Base, Head, Path, Repo Root)
+
+```bash
+./scripts/enhanced-copilot-review-v3.sh <base-branch> <head-branch> <code-path> [--repo-root <path>]
+```
+
+- `<base-branch>`: baseline ref (for example `origin/develop`)
+- `<head-branch>`: branch to review (for example `feature/my-feature`)
+- `<code-path>`: scope to review (`src`, `backend`, `terraform`, or `.`)
+- `--repo-root <path>`: optional target repository when script runs from another directory
+
+### External Repository Example (Generic)
+
+```bash
+./scripts/enhanced-copilot-review-v3.sh origin/develop feature/my-feature src --repo-root /path/to/external-repo --model gpt-5-mini
 ```
 
 ### 3. Check Results
@@ -168,10 +186,10 @@ You can still use them! The enhanced review system:
 
 ```bash
 # Enhanced with downloaded instructions + agents
-./scripts/enhanced-copilot-review-v3.sh feature/test main .
+./scripts/enhanced-copilot-review-v3.sh main feature/test .
 
 # Re-run with strict policy
-./scripts/enhanced-copilot-review-v3.sh feature/test main . --strict
+./scripts/enhanced-copilot-review-v3.sh main feature/test . --strict
 ```
 
 ---
@@ -382,7 +400,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - run: chmod +x scripts/enhanced-copilot-review-v3.sh
-      - run: ./scripts/enhanced-copilot-review-v3.sh ${{ github.base_ref }} ${{ github.head_ref }}
+      - run: ./scripts/enhanced-copilot-review-v3.sh ${{ github.base_ref }} ${{ github.head_ref }} .
       - uses: actions/upload-artifact@v3
         with:
           name: review-reports
@@ -398,7 +416,7 @@ jobs:
 ```bash
 # Periodically refresh from awesome-copilot
 rm -rf .copilot/
-./scripts/enhanced-copilot-review-v3.sh feature/test main .
+./scripts/enhanced-copilot-review-v3.sh main feature/test .
 ```
 
 ### 2. Customize for Your Team
@@ -415,7 +433,7 @@ rm -rf .copilot/
 
 ```bash
 # Run v3 review + artifact smoke validation:
-./scripts/enhanced-copilot-review-v3.sh feature/test main .
+./scripts/enhanced-copilot-review-v3.sh main feature/test .
 ./scripts/ci-smoke-validate-artifacts.sh reports
 ```
 
@@ -464,7 +482,7 @@ Code Review:
 1. **Run the enhanced review**:
    ```bash
   chmod +x scripts/enhanced-copilot-review-v3.sh
-  ./scripts/enhanced-copilot-review-v3.sh feature/test main .
+  ./scripts/enhanced-copilot-review-v3.sh main feature/test .
    ```
 
 2. **Check what was downloaded**:
@@ -494,7 +512,7 @@ Code Review:
 
 | What | Command |
 |------|---------|
-| Run enhanced review | `./scripts/enhanced-copilot-review-v3.sh feature/auth main ./src` |
+| Run enhanced review | `./scripts/enhanced-copilot-review-v3.sh main feature/auth ./src` |
 | Check instructions | `ls .copilot/instructions/` |
 | Check agents | `ls .copilot/agents/` |
 | View config | `cat .github/copilot-instructions.md` |
@@ -512,7 +530,7 @@ cd your-repo
 
 # 2. Run enhanced review with awesome-copilot
 chmod +x scripts/enhanced-copilot-review-v3.sh
-./scripts/enhanced-copilot-review-v3.sh feature/my-feature main ./src
+./scripts/enhanced-copilot-review-v3.sh main feature/my-feature ./src
 
 # 3. Check results
 cat reports/enhanced-copilot-review.md
@@ -543,4 +561,4 @@ git push origin feature/my-feature
 
 **Ready to supercharge your code reviews! 🚀**
 
-*Last Updated: 2024*
+*Last Updated: 2026-02-23*

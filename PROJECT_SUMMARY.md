@@ -1,10 +1,38 @@
 # 📊 UPDATED PROJECT SUMMARY - WITH TERRAFORM SUPPORT
 
 > **v3 Update (2026-02-22):** Primary script is now `scripts/enhanced-copilot-review-v3.sh` (existing scripts are retained unchanged).
+> **v3.1 Update (2026-02-23):** Script now supports `--repo-root <path>` and `--model <id>` (default `gpt-5-mini`), and accepts `.` as `<code-path>`.
 
 ## ✅ Complete Agentic AI Code Reviewer System v1.0.1
 
 Your finished product: **`scripts/enhanced-copilot-review-v3.sh`** - A production-grade, AI-powered code review system with Terraform support.
+
+---
+
+## 📌 Mirrored Usage Addendum (v3.1)
+
+Script signature:
+
+`./scripts/enhanced-copilot-review-v3.sh <base-branch> <head-branch> <code-path> [--repo-root <path>] [--model <id>]`
+
+- `<base-branch>`: baseline ref for comparison
+- `<head-branch>`: branch/ref under review
+- `<code-path>`: scoped folder or `.` for full-repo review
+- `--repo-root`: optional target repository when script runs from another project
+
+Generic external-project example:
+
+```bash
+./scripts/enhanced-copilot-review-v3.sh origin/develop feature/auth src --repo-root /path/to/external-repo --model gpt-5-mini
+```
+
+Antigravity ignore-list mirror:
+
+```bash
+# Default blocked: skills/windows-privilege-escalation/SKILL.md
+ANTIGRAVITY_IGNORE_PATHS_EXTRA="skills/path1/SKILL.md:skills/path2/SKILL.md" \
+./scripts/enhanced-copilot-review-v3.sh main feature/auth .
+```
 
 ---
 

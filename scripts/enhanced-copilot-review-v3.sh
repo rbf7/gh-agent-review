@@ -28,15 +28,21 @@ NC='\033[0m'
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
-COPILOT_DIR="${PROJECT_ROOT}/.copilot"
-INSTRUCTIONS_DIR="${COPILOT_DIR}/instructions"
-AGENTS_DIR="${PROJECT_ROOT}/.github/agents"
-REPORTS_DIR="${PROJECT_ROOT}/reports"
-AWESOME_COPILOT_DIR="${COPILOT_DIR}/awesome-copilot"
-ANTIGRAVITY_DIR="${COPILOT_DIR}/antigravity-awesome-skills"
+COPILOT_DIR=""
+INSTRUCTIONS_DIR=""
+AGENTS_DIR=""
+REPORTS_DIR=""
+AWESOME_COPILOT_DIR=""
+ANTIGRAVITY_DIR=""
 
 DETECTED_STACKS=""
 STRICT_MODE=false
+COPILOT_MODEL="gpt-5-mini"
+
+DEFAULT_ANTIGRAVITY_IGNORE_PATHS=(
+    "skills/windows-privilege-escalation/SKILL.md"
+)
+ANTIGRAVITY_IGNORE_PATHS=()
 
 # ============================================================================
 # LOGGING
@@ -53,6 +59,31 @@ log_success() { echo -e "${GREEN}✅ ${1}${NC}"; }
 log_warning() { echo -e "${YELLOW}⚠️  ${1}${NC}"; }
 log_error() { echo -e "${RED}❌ ${1}${NC}"; }
 log_action() { echo -e "${MAGENTA}▶  ${1}${NC}"; }
+
+TEMP_FILES=()
+
+register_temp_file() {
+    local temp_file="$1"
+    [ -n "$temp_file" ] && TEMP_FILES+=("$temp_file")
+}
+
+cleanup_temp_files() {
+    local temp_file=""
+    for temp_file in "${TEMP_FILES[@]:-}"; do
+        [ -n "$temp_file" ] && [ -f "$temp_file" ] && rm -f "$temp_file"
+    done
+}
+
+trap cleanup_temp_files EXIT INT TERM
+
+configure_paths() {
+    COPILOT_DIR="${PROJECT_ROOT}/.copilot"
+    INSTRUCTIONS_DIR="${COPILOT_DIR}/instructions"
+    AGENTS_DIR="${PROJECT_ROOT}/.github/agents"
+    REPORTS_DIR="${PROJECT_ROOT}/reports"
+    AWESOME_COPILOT_DIR="${COPILOT_DIR}/awesome-copilot"
+    ANTIGRAVITY_DIR="${COPILOT_DIR}/antigravity-awesome-skills"
+}
 
 # ============================================================================
 # VALIDATION
@@ -165,6 +196,29 @@ detect_stacks() {
 # INSTRUCTIONS
 # ============================================================================
 
+build_antigravity_ignore_list() {
+    ANTIGRAVITY_IGNORE_PATHS=("${DEFAULT_ANTIGRAVITY_IGNORE_PATHS[@]}")
+
+    if [ -n "${ANTIGRAVITY_IGNORE_PATHS_EXTRA:-}" ]; then
+        IFS=':' read -r -a extra_paths <<< "$ANTIGRAVITY_IGNORE_PATHS_EXTRA"
+        for extra_path in "${extra_paths[@]}"; do
+            [ -n "$extra_path" ] && ANTIGRAVITY_IGNORE_PATHS+=("$extra_path")
+        done
+    fi
+}
+
+is_ignored_antigravity_path() {
+    local candidate="$1"
+
+    for ignored in "${ANTIGRAVITY_IGNORE_PATHS[@]}"; do
+        if [ "$candidate" = "$ignored" ]; then
+            return 0
+        fi
+    done
+
+    return 1
+}
+
 download_awesome_copilot() {
     log_header "DOWNLOADING AWESOME COPILOT"
 
@@ -187,31 +241,63 @@ download_awesome_copilot() {
 download_antigravity_skills() {
     log_header "DOWNLOADING ANTIGRAVITY SKILLS"
 
-    if [ -d "$ANTIGRAVITY_DIR/.git" ]; then
-        log_info "Updating antigravity-awesome-skills repository..."
-        git -C "$ANTIGRAVITY_DIR" pull origin main --quiet 2>/dev/null || true
-    else
-        log_action "Cloning antigravity-awesome-skills repository..."
-        git clone --depth 1 --branch main https://github.com/sickn33/antigravity-awesome-skills.git "$ANTIGRAVITY_DIR" 2>/dev/null || {
-            log_warning "Could not clone antigravity-awesome-skills, continuing with cached version if available"
-        }
+    build_antigravity_ignore_list
+
+    if [ ${#ANTIGRAVITY_IGNORE_PATHS[@]} -gt 0 ]; then
+        log_info "Ignoring antigravity paths: ${ANTIGRAVITY_IGNORE_PATHS[*]}"
     fi
 
     if [ -d "$ANTIGRAVITY_DIR" ]; then
-        local copied=0
-
-        while IFS= read -r file; do
-            if [[ "$file" == *"skill"* ]] || [[ "$file" == *"instruction"* ]]; then
-                cp "$file" "$INSTRUCTIONS_DIR/" 2>/dev/null || true
-                copied=$((copied + 1))
-                if [ "$copied" -ge 20 ]; then
-                    break
-                fi
-            fi
-        done < <(find "$ANTIGRAVITY_DIR" -name "*.md" -type f 2>/dev/null)
-
-        log_success "Antigravity skills synced"
+        rm -rf "$ANTIGRAVITY_DIR"
     fi
+
+    mkdir -p "$ANTIGRAVITY_DIR"
+
+    log_action "Cloning antigravity-awesome-skills repository metadata (partial clone)..."
+    if ! git clone --depth 1 --filter=blob:none --no-checkout --branch main https://github.com/sickn33/antigravity-awesome-skills.git "$ANTIGRAVITY_DIR" 2>/dev/null; then
+        log_warning "Could not clone antigravity-awesome-skills"
+        return 0
+    fi
+
+    local selected_files=()
+    local relative_path=""
+
+    while IFS= read -r relative_path; do
+        [ -n "$relative_path" ] || continue
+
+        if is_ignored_antigravity_path "$relative_path"; then
+            log_warning "Skipping ignored antigravity path: $relative_path"
+            continue
+        fi
+
+        if echo "$relative_path" | grep -Eiq 'skill|instruction'; then
+            selected_files+=("$relative_path")
+            if [ ${#selected_files[@]} -ge 20 ]; then
+                break
+            fi
+        fi
+    done < <(git -C "$ANTIGRAVITY_DIR" ls-tree -r --name-only origin/main -- "*.md" 2>/dev/null)
+
+    if [ ${#selected_files[@]} -eq 0 ]; then
+        log_warning "No antigravity markdown files selected after ignore filtering"
+        return 0
+    fi
+
+    git -C "$ANTIGRAVITY_DIR" sparse-checkout init --no-cone >/dev/null 2>&1 || true
+    printf '%s\n' "${selected_files[@]}" | git -C "$ANTIGRAVITY_DIR" sparse-checkout set --stdin >/dev/null 2>&1 || true
+    git -C "$ANTIGRAVITY_DIR" checkout -f origin/main --quiet 2>/dev/null || true
+
+    local copied=0
+    local full_path=""
+    for relative_path in "${selected_files[@]}"; do
+        full_path="$ANTIGRAVITY_DIR/$relative_path"
+        if [ -f "$full_path" ]; then
+            cp "$full_path" "$INSTRUCTIONS_DIR/" 2>/dev/null || true
+            copied=$((copied + 1))
+        fi
+    done
+
+    log_success "Antigravity skills synced ($copied files copied)"
 }
 
 create_copilot_instructions() {
@@ -303,6 +389,7 @@ run_ai_review() {
     local diff_file="$REPORTS_DIR/diff.patch"
     local instructions_block="$REPORTS_DIR/instructions-block.md"
     local prompt_file="$REPORTS_DIR/review-prompt.txt"
+    local prompt_temp_file=""
     local raw_output="$REPORTS_DIR/copilot-review.txt"
 
     git -C "$PROJECT_ROOT" diff "$branch1...$branch2" -- "$code_path" > "$diff_file"
@@ -349,7 +436,16 @@ $(cat "$instructions_block")
 $(cat "$diff_file")
 EOF
 
-    if gh copilot -p "$(cat "$prompt_file")" > "$raw_output" 2>&1; then
+    prompt_temp_file="$(mktemp "${REPORTS_DIR}/review-prompt.tmp.XXXXXX.txt")"
+    register_temp_file "$prompt_temp_file"
+    cp "$prompt_file" "$prompt_temp_file"
+
+    local copilot_cmd=(gh copilot --silent)
+    if [ -n "$COPILOT_MODEL" ]; then
+        copilot_cmd+=(--model "$COPILOT_MODEL")
+    fi
+
+    if "${copilot_cmd[@]}" < "$prompt_temp_file" > "$raw_output" 2>&1; then
         log_success "AI review completed"
     else
         log_error "gh copilot prompt execution failed"
@@ -541,7 +637,7 @@ main() {
     echo ""
 
     if [ $# -lt 3 ]; then
-        log_error "Usage: $0 <base-branch> <head-branch> <code-path> [--strict]"
+        log_error "Usage: $0 <base-branch> <head-branch> <code-path> [--strict] [--repo-root <path>] [--model <model-id>]"
         exit 1
     fi
 
@@ -555,12 +651,34 @@ main() {
             --strict)
                 STRICT_MODE=true
                 ;;
+            --repo-root)
+                if [ -z "${2:-}" ]; then
+                    log_error "Missing value for --repo-root"
+                    return 1
+                fi
+                PROJECT_ROOT="$2"
+                shift
+                ;;
+            --model)
+                if [ -z "${2:-}" ]; then
+                    log_error "Missing value for --model"
+                    return 1
+                fi
+                COPILOT_MODEL="$2"
+                shift
+                ;;
             *)
                 log_warning "Unknown option ignored: $1"
                 ;;
         esac
         shift || true
     done
+
+    configure_paths
+    log_info "Using project root: $PROJECT_ROOT"
+    if [ -n "$COPILOT_MODEL" ]; then
+        log_info "Using Copilot model: $COPILOT_MODEL"
+    fi
 
     validate_prerequisites
     setup_directories

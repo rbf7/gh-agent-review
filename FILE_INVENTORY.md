@@ -1,10 +1,39 @@
 # 📦 Complete File Inventory - Agentic AI Code Reviewer v1.0.1
 
 > **v3 Update (2026-02-22):** Added `scripts/enhanced-copilot-review-v3.sh` as the preferred runner; existing scripts remain in place.
+> **v3.1 Update (2026-02-23):** Added support for `--repo-root <path>` and `--model <id>` (default `gpt-5-mini`), with `.` accepted as `<code-path>`.
 
 **Last Updated:** February 22, 2026  
 **Version:** 1.0.1 - Terraform Support Complete  
 **Status:** ✅ ALL FILES PRESENT
+
+---
+
+## 📌 Mirrored Usage Addendum (v3.1)
+
+Script signature:
+
+`./scripts/enhanced-copilot-review-v3.sh <base-branch> <head-branch> <code-path> [--repo-root <path>] [--model <id>]`
+
+- `<base-branch>`: baseline ref
+- `<head-branch>`: target ref under review
+- `<code-path>`: review scope (`src`, `backend`, `terraform`, or `.`)
+- `--repo-root`: optional external repository root
+
+Generic external-project example:
+
+```bash
+./scripts/enhanced-copilot-review-v3.sh origin/develop feature/auth src --repo-root /path/to/external-repo --model gpt-5-mini
+```
+
+Antigravity ignore-list mirror:
+
+```bash
+# Default blocked path:
+# skills/windows-privilege-escalation/SKILL.md
+ANTIGRAVITY_IGNORE_PATHS_EXTRA="skills/path1/SKILL.md:skills/path2/SKILL.md" \
+./scripts/enhanced-copilot-review-v3.sh main feature/auth .
+```
 
 ---
 

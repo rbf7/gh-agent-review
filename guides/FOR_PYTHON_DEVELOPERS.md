@@ -1,6 +1,7 @@
 # 🐍 Python Developers Guide
 
 > **v3 Update (2026-02-22):** Use `scripts/enhanced-copilot-review-v3.sh` for Python reviews in this repository.
+> **v3.1 Update (2026-02-23):** Supports `--repo-root` for external repos, `--model` for model choice (default `gpt-5-mini`), and `.` for repositories without `src`.
 
 Complete guide for Python developers using the Agentic AI Code Reviewer.
 

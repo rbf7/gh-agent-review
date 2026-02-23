@@ -1,8 +1,40 @@
 # 🚨 Troubleshooting Guide
 
 > **v3 Update (2026-02-22):** Troubleshooting steps should target `scripts/enhanced-copilot-review-v3.sh` as the default script.
+> **v3.1 Update (2026-02-23):** Windows command-length issues are mitigated by stdin prompt execution; use `--repo-root` for external repositories and `--model` for explicit model control.
 
 Common issues and solutions for the Agentic AI Code Reviewer.
+
+---
+
+## Platform Coverage (Windows, macOS, Linux, WSL)
+
+- **Windows (PowerShell + Git Bash):** Supported. Run script through Git Bash if needed.
+- **macOS / Linux:** Supported with standard bash usage.
+- **WSL:** Supported; use Linux commands from your WSL shell.
+
+```powershell
+# Windows (PowerShell calling Git Bash)
+& "$env:USERPROFILE\scoop\apps\git\current\bin\bash.exe" -lc "./scripts/enhanced-copilot-review-v3.sh main feature/auth ."
+```
+
+```bash
+# macOS / Linux / WSL
+./scripts/enhanced-copilot-review-v3.sh main feature/auth .
+```
+
+---
+
+## Antigravity Ignore List
+
+**Default blocked path:** `skills/windows-privilege-escalation/SKILL.md`
+
+If a skill path should be skipped before fetching/copying, pass extra entries via `ANTIGRAVITY_IGNORE_PATHS_EXTRA` (colon-separated):
+
+```bash
+ANTIGRAVITY_IGNORE_PATHS_EXTRA="skills/path1/SKILL.md:skills/path2/SKILL.md" \
+./scripts/enhanced-copilot-review-v3.sh main feature/auth .
+```
 
 ---
 
@@ -64,6 +96,27 @@ gh auth login
 ---
 
 ## Runtime Issues
+
+### "I passed wrong parameters / what are the 3 positional args?"
+
+**Problem:** Command arguments are out of order, or `src` is used in repositories that do not have a `src` folder.
+
+**Solution:**
+
+```bash
+# Correct order:
+./scripts/enhanced-copilot-review-v3.sh <base-branch> <head-branch> <code-path> [--repo-root <path>]
+
+# Example with full-repo scope
+./scripts/enhanced-copilot-review-v3.sh origin/develop feature/auth .
+
+# Example for external repository target
+./scripts/enhanced-copilot-review-v3.sh origin/develop feature/auth src --repo-root /path/to/external-repo
+```
+
+Note: some teams say "project root" informally; the script flag name is `--repo-root`.
+
+---
 
 ### "No changes to review"
 
@@ -631,4 +684,4 @@ code_review:
 
 ---
 
-**Last Updated:** February 2024
+**Last Updated:** February 23, 2026

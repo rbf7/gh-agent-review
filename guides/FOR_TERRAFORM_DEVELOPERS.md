@@ -1,6 +1,7 @@
 # 🏗️ Terraform Best Practices & Guidelines
 
 > **v3 Update (2026-02-22):** Use `scripts/enhanced-copilot-review-v3.sh` for Terraform-focused reviews in this repository.
+> **v3.1 Update (2026-02-23):** Supports `--repo-root` for external repos, `--model` for model choice (default `gpt-5-mini`), and `.` as a full-repo `<code-path>`.
 
 Complete Terraform-specific review patterns for the Agentic AI Code Reviewer.
 
